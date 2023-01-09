@@ -1,16 +1,8 @@
 {
-    "version": 2,
-    "name": "ps-bank-server",
-    "builds": [
+    "rewrites": [
         {
-            "src": "app.js",
-            "use": "@vercel/node"
-        }
-    ],
-    "routes": [
-        {
-            "src": "/(.*)",
-            "dest": "/app.js"
+            "source": "/(.*)",
+            "destination": "/api"
         }
     ]
 }
