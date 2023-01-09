@@ -38,8 +38,7 @@ app.use(
   })
 );
 
-const MANGO_DB_URI =
-  "mongodb+srv://rajneesh:Ba5rbozw4kUhx6OG@cluster0.fr2arb9.mongodb.net/psbank?retryWrites=true&w=majority";
+const MANGO_DB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.fr2arb9.mongodb.net/${process.env.MONGO_DEFAULT_DB}?retryWrites=true&w=majority`;
 mongoose
   .connect(MANGO_DB_URI)
   .then((result) => {
