@@ -1,0 +1,7 @@
+{
+	"env": {
+		"MONGO_USER": "rajneesh",
+		"MONGO_PASSWORD": "Ba5rbozw4kUhx6OG",
+		"MONGO_DEFAULT_DB": "psbank"
+	}
+}
