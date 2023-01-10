@@ -1,23 +1,23 @@
-const path = require("path");
+// const path = require("path");
 const express = require("express");
 const { graphqlHTTP } = require("express-graphql");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const helmet = require("helmet");
 const morgan = require("morgan");
-const fs = require("fs");
+// const fs = require("fs");
 
 const schema = require("./graphql/schema");
 const resolvers = require("./graphql/resolvers");
 const auth = require("./middleware/auth");
 const app = express();
 
-const accessLogStream = fs.createWriteStream(
-  path.join(__dirname, "access.log"),
-  { flags: "a" }
-);
+// const accessLogStream = fs.createWriteStream(
+//   path.join(__dirname, "access.log"),
+//   { flags: "a" }
+// );
 app.use(helmet());
-app.use(morgan("combined", { stream: accessLogStream }));
+// app.use(morgan("combined", { stream: accessLogStream }));
 app.use(cors());
 // app.use((req, res, next) =>  {
 //   res.setHeader('Access-Control-Allow-Origin', '*')
