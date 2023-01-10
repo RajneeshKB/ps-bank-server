@@ -4,7 +4,7 @@ const { graphqlHTTP } = require("express-graphql");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const helmet = require("helmet");
-const morgan = require("morgan");
+// const morgan = require("morgan");
 // const fs = require("fs");
 
 const schema = require("./graphql/schema");
