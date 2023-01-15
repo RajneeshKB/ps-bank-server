@@ -1,23 +1,23 @@
-const path = require("path");
+// const path = require("path");
 const express = require("express");
 const { graphqlHTTP } = require("express-graphql");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const helmet = require("helmet");
-const morgan = require("morgan");
-const fs = require("fs");
+// const morgan = require("morgan");
+// const fs = require("fs");
 
 const schema = require("./graphql/schema");
 const resolvers = require("./graphql/resolvers");
 const auth = require("./middleware/auth");
 const app = express();
 
-const accessLogStream = fs.createWriteStream(
-  path.join(__dirname, "access.log"),
-  { flags: "a" }
-);
+// const accessLogStream = fs.createWriteStream(
+//   path.join(__dirname, "access.log"),
+//   { flags: "a" }
+// );
 app.use(helmet());
-app.use(morgan("combined", { stream: accessLogStream }));
+// app.use(morgan("combined", { stream: accessLogStream }));
 app.use(cors());
 // app.use((req, res, next) =>  {
 //   res.setHeader('Access-Control-Allow-Origin', '*')
@@ -44,8 +44,7 @@ app.use(
   })
 );
 
-const MANGO_DB_URI =
-  "mongodb+srv://rajneesh:Ba5rbozw4kUhx6OG@cluster0.fr2arb9.mongodb.net/psbank?retryWrites=true&w=majority";
+const MANGO_DB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.fr2arb9.mongodb.net/${process.env.MONGO_DEFAULT_DB}?retryWrites=true&w=majority`;
 mongoose
   .connect(MANGO_DB_URI)
   .then((result) => {

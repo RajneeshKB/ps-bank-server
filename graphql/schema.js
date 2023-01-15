@@ -172,13 +172,31 @@ module.exports = buildSchema(`
 		totalRowCount: Int,
 		transactions: [TransactionData]
 	}
-	input TransactionDetail {
+	input DepositDetail {
 		customerId: String!,
 		accountNumber: String!,
-		transactionRemark: String!,
-		transactionAmount: String!,
-		transactionType: String!,
+		amount: String!,
 	}
+	input TransactionDetail {
+		customerId: String!,
+		transferType: String!,
+		fromAccount: String!,
+		toAccount: String!,
+		transferAmount: String!,
+		transferRemarks: String,
+	}
+	type Beneficiary {
+		bankName: String!
+		beneficiaryName: String!
+		accountNumber: String!
+	}
+	input BeneficiaryDetails {
+		bankName: String!
+		  beneficiaryName: String!
+		  accountNumber: String!
+		  customerId: String!
+	}
+
 	type RootQuery {
 		loginCustomer(customerData: CustomerLoginData): CustomerLogin
 		resetPassword(customerData: PasswordResetData): PasswordResetReturnType
@@ -186,12 +204,15 @@ module.exports = buildSchema(`
 		getAccounts(customerId: String): [AccountsData]
 		getCreditCards(customerId: String): [CreditCardData]
 		getTransactions(filterData: FetchTransactionData): FilterReturnData
+		getAllBeneficiaries(customerId: String): [Beneficiary]
 	}
 	type RootMutation {
 		createCustomer(customerData: CustomerRegistrationData):Customer
 		openNewAccount(accountData: AccountOpeningData): NewAccount
 		issueNewCreditCard(creditCardData: CreditCardApplicationData): NewCreditCard
-		addNewTransaction(transactionDetails: TransactionDetail): String
+		depositMoney(depositDetails: DepositDetail): String
+		transferMoney(transactionDetails: TransactionDetail): String
+		addBeneficiary(beneficiaryDetails: BeneficiaryDetails): String
 	}
 
 	schema {
