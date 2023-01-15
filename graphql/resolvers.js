@@ -15,6 +15,7 @@ const {
 const {
   transferMoneyUpdateDb,
   getTransactionsFromDb,
+  depositMoneyUpdateDb,
 } = require("../controllers/transactions");
 const {
   addBeneficiaryToDb,
@@ -30,6 +31,7 @@ module.exports = {
   openNewAccount: openNewAccountToDb,
   issueNewCreditCard: issueNewCreditCardToDb,
   getCreditCards: getCreditCardFromDb,
+  depositMoney: depositMoneyUpdateDb,
   transferMoney: transferMoneyUpdateDb,
   getTransactions: getTransactionsFromDb,
   addBeneficiary: addBeneficiaryToDb,

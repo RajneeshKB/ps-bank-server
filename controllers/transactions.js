@@ -35,7 +35,6 @@ exports.transferMoneyUpdateDb = async ({ transactionDetails }, req) => {
       }
     }
 
-    console.log("got from account", accountData);
     const openingBalanceForFromAccount = +accountData.availableBalance;
     if (transferAmount > openingBalanceForFromAccount) {
       throw new Error("invalid sufficient amount");
@@ -45,11 +44,6 @@ exports.transferMoneyUpdateDb = async ({ transactionDetails }, req) => {
     const closingBalanceForFromAccount =
       openingBalanceForFromAccount - +transferAmount;
 
-    console.log(
-      "got balance for from data",
-      openingBalanceForFromAccount,
-      closingBalanceForFromAccount
-    );
     const updateResponse = await Account.findOneAndUpdate(
       { accountNumber: fromAccount },
       { availableBalance: closingBalanceForFromAccount },
@@ -70,7 +64,6 @@ exports.transferMoneyUpdateDb = async ({ transactionDetails }, req) => {
       openingBalance: accountData.availableBalance,
       closingBalance: closingBalanceForFromAccount.toString(),
     };
-    console.log("transaction data formed", fromTransactionData);
     const fromTransaction = new Transaction(fromTransactionData);
     await fromTransaction.save();
 
@@ -101,6 +94,56 @@ exports.transferMoneyUpdateDb = async ({ transactionDetails }, req) => {
       const toTransaction = new Transaction(toTransactionData);
       await toTransaction.save();
     }
+
+    return "SUCCESS";
+  } catch (e) {
+    const error = new Error("invalid form data");
+    throw error;
+  }
+};
+
+exports.depositMoneyUpdateDb = async ({ depositDetails }, req) => {
+  if (!req.isAuth) {
+    const error = new Error("Invalid access token");
+    error.code = 401;
+    throw error;
+  }
+  const { customerId, accountNumber, amount } = depositDetails;
+
+  if (customerId !== req.customerId) {
+    const error = new Error("Access token for customer do not match");
+    error.code = 401;
+    throw error;
+  }
+  try {
+    const accountData = await Account.findOne({ accountNumber: accountNumber });
+    if (!accountData) {
+      throw new Error("invalid account number");
+    }
+    const openingBalance = +accountData.availableBalance;
+    const closingBalance = openingBalance + +amount;
+
+    const updateResponse = await Account.findOneAndUpdate(
+      { accountNumber: accountNumber },
+      { availableBalance: closingBalance },
+      { new: true }
+    );
+    if (!updateResponse?.availableBalance === closingBalance) {
+      throw new Error("something went wrong while updating account");
+    }
+
+    const currentDate = new Date().toDateString();
+    const newTransaction = {
+      accountNumber: accountNumber,
+      transactionDate: currentDate,
+      transactionRemark: `deposit`,
+      transactionAmount: amount,
+      transactionType: "credit",
+      openingBalance: openingBalance,
+      closingBalance: closingBalance,
+    };
+    const fromTransaction = new Transaction(newTransaction);
+    await fromTransaction.save();
 
     return "SUCCESS";
   } catch (e) {

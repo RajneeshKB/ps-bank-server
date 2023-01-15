@@ -1,6 +1,7 @@
 const Customer = require("../models/customers");
 const Account = require("../models/accounts");
 const Nominee = require("../models/nominee");
+const Transaction = require("../models/transactions");
 const { getRandomIntInclusive, encryptPassword } = require("../util");
 
 const getUniqueAccountNumber = async () => {
@@ -143,6 +144,20 @@ exports.openNewAccountToDb = async ({ accountData }, req) => {
     }
     await nomineeData.save();
     await accountOpenFormData.save();
+
+    /** Add new transaction for initial deposit */
+    const currentDate = new Date().toDateString();
+    const newTransaction = {
+      accountNumber: newAccountNumber,
+      transactionDate: currentDate,
+      transactionRemark: `initial depost`,
+      transactionAmount: initialDeposit,
+      transactionType: "credit",
+      openingBalance: initialDeposit,
+      closingBalance: initialDeposit,
+    };
+    const fromTransaction = new Transaction(newTransaction);
+    await fromTransaction.save();
 
     return {
       accountNumber: newAccountNumber,

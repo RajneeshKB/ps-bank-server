@@ -172,6 +172,11 @@ module.exports = buildSchema(`
 		totalRowCount: Int,
 		transactions: [TransactionData]
 	}
+	input DepositDetail {
+		customerId: String!,
+		accountNumber: String!,
+		amount: String!,
+	}
 	input TransactionDetail {
 		customerId: String!,
 		transferType: String!,
@@ -205,6 +210,7 @@ module.exports = buildSchema(`
 		createCustomer(customerData: CustomerRegistrationData):Customer
 		openNewAccount(accountData: AccountOpeningData): NewAccount
 		issueNewCreditCard(creditCardData: CreditCardApplicationData): NewCreditCard
+		depositMoney(depositDetails: DepositDetail): String
 		transferMoney(transactionDetails: TransactionDetail): String
 		addBeneficiary(beneficiaryDetails: BeneficiaryDetails): String
 	}
