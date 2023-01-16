@@ -3,6 +3,10 @@ const Account = require("../models/accounts");
 const Nominee = require("../models/nominee");
 const Transaction = require("../models/transactions");
 const { getRandomIntInclusive, encryptPassword } = require("../util");
+const {
+  ACCOUNT_TYPE_PREMIUM,
+  MINIMUM_BALANCE_PREMIUM_ACCOUNT,
+} = require("../util/constants");
 
 const getUniqueAccountNumber = async () => {
   const newAccountNumber = getRandomIntInclusive(1234567890, 9876543210);
@@ -179,10 +183,23 @@ exports.getAccountsFromDb = async ({ customerId }, req) => {
     error.code = 401;
     throw error;
   }
-  const accFound = await Account.find({ primaryHolderId: customerId });
-  if (!accFound) {
+  const accountList = await Account.find({ primaryHolderId: customerId });
+  if (!accountList) {
     throw new Error("data mismatch");
   }
 
-  return accFound;
+  const updatedAccountsList = accountList.map((account) => {
+    let notifications = [];
+    if (
+      account.accountType === ACCOUNT_TYPE_PREMIUM &&
+      account.availableBalance > MINIMUM_BALANCE_PREMIUM_ACCOUNT
+    ) {
+      notifications.push({
+        code: "101",
+        message: "Minimum balance not maintained. Pay now to avoid charges.",
+      });
+    }
+    return { ...account._doc, notifications: notifications };
+  });
+  return updatedAccountsList;
 };
