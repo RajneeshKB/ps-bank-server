@@ -69,6 +69,10 @@ module.exports = buildSchema(`
 	type NewAccount {
 		accountNumber: String
 	}
+	type CustomNotification {
+		code: String!
+		message: String!
+	}
 	type AccountsData {
 		accountNumber: String!,
 		accountType: String!,
@@ -82,6 +86,7 @@ module.exports = buildSchema(`
 		validFrom: String!,
 		validTo: String!,
 		cvvNumber: String!
+		notifications: [CustomNotification]!
 	}
 	input AccountOpeningData {
 		savingAccountType: String!,
@@ -145,6 +150,8 @@ module.exports = buildSchema(`
 		cvvNumber: String!,
 		availableLimit: String!,
 		outstandingAmount: String!
+		dueDate: String
+		notifications: [CustomNotification]!
 	}
 	input CreditCardApplicationData {
 		customerId: String!,

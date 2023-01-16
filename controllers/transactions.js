@@ -37,7 +37,7 @@ exports.transferMoneyUpdateDb = async ({ transactionDetails }, req) => {
 
     const openingBalanceForFromAccount = +accountData.availableBalance;
     if (transferAmount > openingBalanceForFromAccount) {
-      throw new Error("invalid sufficient amount");
+      throw new Error("insufficient amount");
     }
 
     /** Update balance in from account */

@@ -71,10 +71,26 @@ exports.getCreditCardFromDb = async ({ customerId }, req) => {
     throw error;
   }
 
-  const cardFound = await CreditCard.find({ cardholderId: customerId });
-  if (!cardFound) {
+  const cardsList = await CreditCard.find({ cardholderId: customerId });
+  if (!cardsList) {
     throw new Error("data mismatch");
   }
 
-  return cardFound;
+  const updatedCardsList = cardsList.map((card) => {
+    let notifications = [];
+    const currentDate = new Date().getTime();
+    const dueDate = new Date(card.dueDate).getTime();
+    const dueDatePassed = currentDate > dueDate;
+
+    if (+card.outstandingAmount > 0 && dueDatePassed) {
+      notifications.push({
+        code: "110",
+        message:
+          "Payment due date passed. Pay outstanding amount to avoid late charges",
+      });
+    }
+    return { ...card._doc, notifications: notifications };
+  });
+
+  return updatedCardsList;
 };
