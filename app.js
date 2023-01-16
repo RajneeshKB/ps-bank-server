@@ -16,21 +16,27 @@ const app = express();
 //   path.join(__dirname, "access.log"),
 //   { flags: "a" }
 // );
-app.use(helmet());
+// app.use(
+//   helmet({
+//     contentSecurityPolicy: false,
+//   })
+// );
 // app.use(morgan("combined", { stream: accessLogStream }));
-app.use(cors());
 // app.use((req, res, next) =>  {
 //   res.setHeader('Access-Control-Allow-Origin', '*')
 //   res.setHeader('Access-Control-Allow-Methods', 'POST')
 //   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
 //   next()
 // })
+app.use(helmet());
+app.use(cors());
 app.use(auth);
 app.use(
   "/graphql",
   graphqlHTTP({
     schema: schema,
     rootValue: resolvers,
+    graphiql: true,
     customFormatErrorFn(err) {
       if (!err.originalError) {
         return err;
@@ -40,7 +46,6 @@ app.use(
       const code = err.originalError.code || 500;
       return { message: message, status: code, data: data };
     },
-    graphiql: true,
   })
 );
 
