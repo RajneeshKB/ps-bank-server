@@ -1,3 +1,4 @@
+const dayjs = require("dayjs");
 const Customer = require("../models/customers");
 const Account = require("../models/accounts");
 const Nominee = require("../models/nominee");
@@ -150,7 +151,7 @@ exports.openNewAccountToDb = async ({ accountData }, req) => {
     await accountOpenFormData.save();
 
     /** Add new transaction for initial deposit */
-    const currentDate = new Date().toDateString();
+    const currentDate = dayjs().toISOString();
     const newTransaction = {
       accountNumber: newAccountNumber,
       transactionDate: currentDate,
@@ -192,7 +193,7 @@ exports.getAccountsFromDb = async ({ customerId }, req) => {
     let notifications = [];
     if (
       account.accountType === ACCOUNT_TYPE_PREMIUM &&
-      account.availableBalance > MINIMUM_BALANCE_PREMIUM_ACCOUNT
+      +account.availableBalance < +MINIMUM_BALANCE_PREMIUM_ACCOUNT
     ) {
       notifications.push({
         code: "101",

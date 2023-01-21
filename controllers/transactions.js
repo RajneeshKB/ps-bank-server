@@ -1,3 +1,4 @@
+const dayjs = require("dayjs");
 const Transaction = require("../models/transactions");
 const Account = require("../models/accounts");
 
@@ -54,7 +55,7 @@ exports.transferMoneyUpdateDb = async ({ transactionDetails }, req) => {
     }
 
     /** Add transaction details for from account*/
-    const currentDate = new Date().toDateString();
+    const currentDate = dayjs().toISOString();
     const fromTransactionData = {
       accountNumber: fromAccount,
       transactionDate: currentDate,
@@ -132,7 +133,7 @@ exports.depositMoneyUpdateDb = async ({ depositDetails }, req) => {
       throw new Error("something went wrong while updating account");
     }
 
-    const currentDate = new Date().toDateString();
+    const currentDate = dayjs().toISOString();
     const newTransaction = {
       accountNumber: accountNumber,
       transactionDate: currentDate,
@@ -185,12 +186,27 @@ exports.getTransactionsFromDb = async ({ filterData }, req) => {
   const allTransactions = await Transaction.find({
     accountNumber: accountNumber,
   }).sort({ _id: -1 });
-  const transactionsFound = await Transaction.find({
-    accountNumber: accountNumber,
-  })
-    .sort({ _id: -1 })
-    .skip(currentPage * perPageData)
-    .limit(perPageData);
+
+  let transactionsFound = [];
+  if (!lastTenTransactions && fromDate && toDate) {
+    transactionsFound = await Transaction.find({
+      accountNumber: accountNumber,
+      transactionDate: {
+        $gte: dayjs(fromDate).startOf("date"),
+        $lte: dayjs(toDate).endOf("date"),
+      },
+    })
+      .sort({ _id: -1 })
+      .skip(currentPage * perPageData)
+      .limit(perPageData);
+  } else {
+    transactionsFound = await Transaction.find({
+      accountNumber: accountNumber,
+    })
+      .sort({ _id: -1 })
+      .skip(currentPage * perPageData)
+      .limit(perPageData);
+  }
   return {
     totalRowCount: allTransactions?.length,
     transactions: transactionsFound,

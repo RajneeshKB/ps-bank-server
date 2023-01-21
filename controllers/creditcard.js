@@ -1,3 +1,4 @@
+const dayjs = require("dayjs");
 const CreditCard = require("../models/creditcard");
 const { getRandomIntInclusive } = require("../util");
 
@@ -78,9 +79,7 @@ exports.getCreditCardFromDb = async ({ customerId }, req) => {
 
   const updatedCardsList = cardsList.map((card) => {
     let notifications = [];
-    const currentDate = new Date().getTime();
-    const dueDate = new Date(card.dueDate).getTime();
-    const dueDatePassed = currentDate > dueDate;
+    const dueDatePassed = dayjs().isAfter(card.dueDate);
 
     if (+card.outstandingAmount > 0 && dueDatePassed) {
       notifications.push({

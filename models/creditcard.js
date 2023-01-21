@@ -36,7 +36,7 @@ const creditCardSchema = new Schema({
     required: true,
   },
   dueDate: {
-    type: String,
+    type: Date,
     required: false,
   },
 });
