@@ -208,7 +208,7 @@ exports.getTransactionsFromDb = async ({ filterData }, req) => {
       .limit(perPageData);
   }
   return {
-    totalRowCount: allTransactions?.length,
+    totalRowCount: lastTenTransactions ? 10 : allTransactions?.length,
     transactions: transactionsFound,
   };
 };
