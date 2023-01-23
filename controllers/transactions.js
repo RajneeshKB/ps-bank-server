@@ -207,8 +207,14 @@ exports.getTransactionsFromDb = async ({ filterData }, req) => {
       .skip(currentPage * perPageData)
       .limit(perPageData);
   }
+  const totalRowCount =
+    allTransactions?.length < 10
+      ? allTransactions?.length
+      : lastTenTransactions
+      ? 10
+      : allTransactions?.length;
   return {
-    totalRowCount: lastTenTransactions ? 10 : allTransactions?.length,
+    totalRowCount,
     transactions: transactionsFound,
   };
 };
