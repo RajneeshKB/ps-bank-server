@@ -183,12 +183,17 @@ exports.getTransactionsFromDb = async ({ filterData }, req) => {
     throw error;
   }
 
-  const allTransactions = await Transaction.find({
-    accountNumber: accountNumber,
-  }).sort({ _id: -1 });
-
   let transactionsFound = [];
+  let allTransactions = [];
+
   if (!lastTenTransactions && fromDate && toDate) {
+    allTransactions = await Transaction.find({
+      accountNumber: accountNumber,
+      transactionDate: {
+        $gte: dayjs(fromDate).startOf("date"),
+        $lte: dayjs(toDate).endOf("date"),
+      },
+    }).sort({ _id: -1 });
     transactionsFound = await Transaction.find({
       accountNumber: accountNumber,
       transactionDate: {
@@ -200,6 +205,9 @@ exports.getTransactionsFromDb = async ({ filterData }, req) => {
       .skip(currentPage * perPageData)
       .limit(perPageData);
   } else {
+    allTransactions = await Transaction.find({
+      accountNumber: accountNumber,
+    }).sort({ _id: -1 });
     transactionsFound = await Transaction.find({
       accountNumber: accountNumber,
     })
@@ -207,12 +215,14 @@ exports.getTransactionsFromDb = async ({ filterData }, req) => {
       .skip(currentPage * perPageData)
       .limit(perPageData);
   }
+
   const totalRowCount =
     allTransactions?.length < 10
       ? allTransactions?.length
       : lastTenTransactions
       ? 10
       : allTransactions?.length;
+
   return {
     totalRowCount,
     transactions: transactionsFound,
